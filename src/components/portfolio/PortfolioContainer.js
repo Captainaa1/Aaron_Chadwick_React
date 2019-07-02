@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import PortfolioItem from "./portfolio-item";
+import axios from "axios";
 export default class PortfolioContainer extends Component {
     constructor() {
         super();
@@ -8,16 +9,11 @@ export default class PortfolioContainer extends Component {
         this.state = {
             pageTitle: "Welcome to my portfolio",
             isLoading: false,
-            data: [
-            { title: "Quip", category: "eCommerce" },
-            { title: "Eventbrite", category: "Scheduling" },
-            { title: "Ministry Safe", category: "Enterprise" },
-            { title: "SwingAway", category: "eCommerce" }
-            ]
+            data: []
         };            
 
         this.handleFilter = this.handleFilter.bind(this);
-        this.handlePageTitleUpdate = this.handlePageTitleUpdate.bind(this);
+        this.getPortfolioItems = this.getPortfolioItems.bind(this);
     }
         handleFilter(filter) {
             this.setState({
@@ -28,10 +24,40 @@ export default class PortfolioContainer extends Component {
             })
         }
     
+        getPortfolioItems() {
+            axios
+                .get("https://captainaa1.devcamp.space/portfolio/portfolio_items")
+                .then ( response => {
+                    console.log("response data", response);
+                    this.setState({
+                        data: response.data.portfolio_items
+                    })
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+            }
+
+
+
+
+
     
   PortfolioItems() {
+      // Data that we'll need:
+      // - background
+      // - logo
+      // - description: desrcription
+      // - id: id
       return this.state.data.map(item => {
-          return <PortfolioItem title={item. title} url={"google.com"}/>;
+        console.log("portfolio item");
+          return 
+          <PortfolioItem 
+          key= {item.id} 
+          title={item.name}
+          item={item}
+          url={item.url} 
+          slug={item.slug}/>;
       })
   }
 
@@ -40,7 +66,9 @@ export default class PortfolioContainer extends Component {
          pageTitle: "Congrats"
      })
  }
-
+    componentDidMount () {
+        this.getPortfolioItems();
+    }
     render() {
         if (this.state.isLoading) {
             return <div>Loading... Just wait a sec</div>
